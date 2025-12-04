@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  dungeon-api:
+    build:
+      context: .
+      dockerfile: Dungeon.Api/Dockerfile
+    container_name: dungeon-api
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+    volumes:
+      - dungeon_data:/app/data
+    networks:
+      - dungeon-network
+
+  dungeon-web:
+    build:
+      context: ./Dungeon.Web
+      dockerfile: Dockerfile
+    container_name: dungeon-web
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+    depends_on:
+      - dungeon-api
+    networks:
+      - dungeon-network
+
+networks:
+  dungeon-network:
+    driver: bridge
+
+volumes:
+  dungeon_data:
